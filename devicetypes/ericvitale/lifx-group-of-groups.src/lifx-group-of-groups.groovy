@@ -72,6 +72,8 @@ metadata {
         command "apiFlash"
         command "apiBreathe"
         command "setLevelAndTemperature"
+        command "setLevelOverTime"
+        command "setColorTemperatureOverTime"
         
         attribute "colorName", "string"
         attribute "lightStatus", "string"
