@@ -417,6 +417,42 @@ def setLevelAndTemperature(level, temperature, duration=getDefaultTransitionDura
     sendLIFXCommand([color : "kelvin:${temperature} saturation:0 brightness:${brightness}", "power" : "on", "duration" : duration])
 }
 
+def setLevelOverTime(level, duration=getDefaultTransitionDuration()) {
+	log("Setting groups level to ${level} over ${duration} seconds.", "INFO")
+    
+    if (level > 100) {
+		level = 100
+	} else if (level <= 0 || level == null) {
+		sendEvent(name: "level", value: 0)
+		return off()
+	}
+    
+    
+    state.level = level
+	sendEvent(name: "level", value: level, displayed: getUseActivityLogDebug())
+    
+    def brightness = level / 100
+    
+    sendLIFXCommand(["brightness" : brightness, "duration" : duration])
+}
+
+def setColorTemperatureOverTime(value, duration=getDefaultTransitionDuration()) {
+	log("Begin setting groups color temperature to ${value} over ${duration} seconds.", "DEBUG")
+    
+    if(value < 2500) {
+    	value = 2500
+    } else if(value > 9000) {
+    	value = 9000
+    }
+    
+    sendLIFXCommand([color: "kelvin:${value} saturation:0", "duration" : duration])
+            
+	sendEvent(name: "colorTemperature", value: value, displayed: getUseActivityLogDebug())
+	sendEvent(name: "color", value: "#ffffff", displayed: getUseActivityLogDebug())
+	sendEvent(name: "saturation", value: 0, displayed: getUseActivityLogDebug())
+    sendEvent(name: "level", value: "${state.level}", displayed: getUseActivityLogDebug())
+}
+
 def poll() {
 	log("Polling...", "DEBUG")
     buildGroupList()
